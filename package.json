@@ -4,8 +4,8 @@
   "main": "none",
   "license": "MIT",
   "scripts": {
-    "mysqldump:full": "docker exec -t mysql mysqldump -u root --databases query-cache-test > ./sql/full.sql",
-		"mysqldump:schema": "docker exec -t mysql mysqldump -u root --databases query-cache-test --no-data | sed -e 's/ AUTO_INCREMENT=[0-9]*//' > ./sql/1_schema.sql",
-		"mysqldump:data": "docker exec -t mysql mysqldump -u root -t --databases query-cache-test --no-create-db > ./sql/2_data.sql"
+    "mysqldump:full": "docker exec -t mysql mysqldump -u root --databases sample > ./sql/full.sql",
+		"mysqldump:schema": "docker exec -t mysql mysqldump -u root --databases sample --no-data | sed -e 's/ AUTO_INCREMENT=[0-9]*//' > ./sql/1_schema.sql",
+		"mysqldump:data": "docker exec -t mysql mysqldump -u root -t --databases sample --no-create-db > ./sql/2_data.sql"
   }
 }

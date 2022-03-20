@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.36, for Linux (x86_64)
 --
--- Host: localhost    Database: query-cache-test
+-- Host: localhost    Database: sample
 -- ------------------------------------------------------
 -- Server version	5.7.36
 
@@ -16,19 +16,38 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `query-cache-test`
+-- Current Database: `sample`
 --
 
-USE `query-cache-test`;
+USE `sample`;
 
 --
--- Dumping data for table `test`
+-- Dumping data for table `group_members`
 --
 
-LOCK TABLES `test` WRITE;
-/*!40000 ALTER TABLE `test` DISABLE KEYS */;
-INSERT INTO `test` VALUES (1,'山田 太郎','tarou.yamada@example.com'),(2,'山田 花子','hanako.yamada@example.com'),(3,'鈴木 太郎','tarou.suzuki@example.com'),(4,'鈴木 花子','hanako.suzuki@example.com'),(5,'佐藤 太郎','tarou.satou@example.com'),(6,'佐藤 花子','hanako.satou@example.com'),(7,'高橋 太郎','tarou.takahashi@example.com'),(8,'高橋 花子','hanako.takahashi@example.com'),(9,'田中 太郎','tarou.tanaka@example.com'),(10,'田中 花子','hanako.tanaka@example.com');
-/*!40000 ALTER TABLE `test` ENABLE KEYS */;
+LOCK TABLES `group_members` WRITE;
+/*!40000 ALTER TABLE `group_members` DISABLE KEYS */;
+/*!40000 ALTER TABLE `group_members` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `groups`
+--
+
+LOCK TABLES `groups` WRITE;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES (1,'group1');
+/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `members`
+--
+
+LOCK TABLES `members` WRITE;
+/*!40000 ALTER TABLE `members` DISABLE KEYS */;
+INSERT INTO `members` VALUES (1,'tarou@example.com','山田 太郎');
+/*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -40,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-03-13 17:57:28
+-- Dump completed on 2022-03-17 17:41:42
