@@ -1,11 +1,14 @@
 {
-  "name": "learn-cache",
+  "name": "learn-mroonga",
   "version": "1.0.0",
   "main": "none",
   "license": "MIT",
   "scripts": {
-    "mysqldump:full": "docker exec -t mysql mysqldump -u root --databases sample > ./sql/full.sql",
-		"mysqldump:schema": "docker exec -t mysql mysqldump -u root --databases sample --no-data | sed -e 's/ AUTO_INCREMENT=[0-9]*//' > ./sql/1_schema.sql",
-		"mysqldump:data": "docker exec -t mysql mysqldump -u root -t --databases sample --no-create-db > ./sql/2_data.sql"
+    "mysqldump:full": "docker exec -t mroonga mysqldump -u root --databases sample > ./sql/full.sql",
+    "mysqldump:schema": "docker exec -t mroonga mysqldump -u root --databases sample --no-data | sed -e 's/ AUTO_INCREMENT=[0-9]*//' > ./sql/1_schema.sql",
+    "mysqldump:data": "docker exec -t mroonga mysqldump -u root -t --databases sample --no-create-db > ./sql/2_data.sql"
+  },
+  "dependencies": {
+    "mysql2": "^2.3.3"
   }
 }
