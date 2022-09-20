@@ -1,18 +1,15 @@
 version: '3.9'
 services:
-  mroonga:
-    build:
-      context: ./build
-      dockerfile: Dockerfile
-    image: mymroonga:latest
-    container_name: mroonga
+  mysql:
+    image: mysql:5.7.39
+    container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: ''
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
       TZ: 'Asia/Tokyo'
-    volumes:
-      - ./data/mysql:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d
-      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
       - 3306:3306
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
