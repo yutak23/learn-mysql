@@ -1,11 +1,28 @@
-import { program } from 'commander';
+import { program, InvalidArgumentError } from 'commander';
 import mysql from 'mysql2/promise';
 import config from 'config';
 import cliProgress from 'cli-progress';
-import stream from 'stream';
 
-program.option('--is-stream').parse(process.argv);
-const { isStream } = program.opts();
+// eslint-disable-next-line no-unused-vars
+const validateParseInt = (value, _) => {
+	const parsed = parseInt(value, 10);
+	if (Number.isNaN(parsed)) throw new InvalidArgumentError('Not a Number');
+	if (parsed < 0 || parsed > 1000)
+		throw new InvalidArgumentError(
+			'must be greater than 0 and less than or equal 1000'
+		);
+
+	return parsed;
+};
+
+program
+	.requiredOption(
+		'-bs, --block-size <size>',
+		'size of the block to be processed',
+		validateParseInt
+	)
+	.parse(process.argv);
+const { blockSize } = program.opts();
 
 const bar = new cliProgress.SingleBar({
 	format: `CLI Progress |{bar}| {percentage}% || {value}/{total} counts`,
@@ -14,70 +31,43 @@ const bar = new cliProgress.SingleBar({
 	hideCursor: true
 });
 
-console.log(process.pid);
+console.log(`process id is ${process.pid}`);
+
+let receivedSignal;
 
 const main = async () => {
 	const hrstart = process.hrtime();
 	const connection = await mysql.createConnection(config.get('mysql'));
 
-	bar.start(3000000, 0);
+	try {
+		const [count] = await connection.query(
+			'SELECT MAX(id) as max FROM `texts`;'
+		);
+		const maxId = count.shift().max;
 
-	if (isStream) {
-		const readerStream = connection.connection
-			.query('SELECT * FROM `texts`;')
-			.stream();
+		bar.start(Math.floor(maxId / blockSize), 0);
 
-		const writerStrem = new stream.Writable({
-			objectMode: true,
-			write(data, encoding, callback) {
+		for (let i = 0; i < maxId; i += blockSize) {
+			const startId = i + 1;
+			const currentId = i + blockSize;
+
+			// eslint-disable-next-line no-await-in-loop
+			const [rows] = await connection.query(
+				'SELECT * FROM `texts` LIMIT ? OFFSET ? ;',
+				[blockSize, startId]
+			);
+
+			// eslint-disable-next-line no-restricted-syntax, no-await-in-loop, no-unused-vars
+			for await (const row of rows) {
 				// await connection.query(...) <- DB insert/update
 				bar.increment();
-				callback();
 			}
-		});
 
-		stream.pipeline(readerStream, writerStrem, (err) => {
-			if (err) console.error(err);
-
-			bar.stop();
-
-			const hrend = process.hrtime(hrstart);
-			console.info(`Execution time : ${hrend} sec`);
-
-			connection.destroy();
-		});
-
-		return;
-
-		// 以下はwriterがないのであれば利用できそうな実装方法
-		// await new Promise((accept, reject) => {
-		// 	const s1 = connection.connection.query('SELECT * FROM `texts`;');
-		// 	// eslint-disable-next-line no-unused-vars
-		// 	s1.on('result', (row) => {
-		// 		bar.increment();
-		// 	});
-		// 	s1.on('end', accept);
-		// 	s1.on('error', reject);
-		// });
-	}
-
-	try {
-		await Promise.all(
-			[...Array(3)].map(async (_, i) => {
-				const [rows] = await connection.query(
-					'SELECT * FROM `texts` LIMIT ? OFFSET ? ;',
-					[1000000, i * 1000000]
-				);
-
-				await Promise.all(
-					// eslint-disable-next-line no-unused-vars
-					rows.map(async (row) => {
-						// await connection.query(...) <- DB insert/update
-						bar.increment();
-					})
-				);
-			})
-		);
+			if (receivedSignal) {
+				console.log(`Processed id is "${currentId}"`);
+				break;
+			}
+		}
 
 		bar.stop();
 
@@ -93,3 +83,15 @@ const main = async () => {
 (async () => {
 	await main();
 })();
+
+const exit = (signal) => {
+	bar.stop();
+
+	receivedSignal = signal;
+	console.log(`signal ${signal} received`);
+	console.log('now shut donw ... please wait');
+};
+
+process.on('SIGINT', () => {
+	exit('SIGINT');
+});
