@@ -27,6 +27,7 @@ jobs:
         run: yarn install
 
       - run: |
+          cat ~/work/_temp/.npmrc
           pwd
           ls -al
 
