@@ -20,9 +20,14 @@ jobs:
         with:
           node-version: '16.17.0'
           registry-url: https://npm.pkg.github.com/
+          scope: '@yuta-katayama-23'
 
       - name: yarn install
         run: yarn install
+
+      - run: |
+          ls -al
+          cat ./.npmrc
 
       - name: build
         run: yarn build
