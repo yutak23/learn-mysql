@@ -18,6 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
+          always-auth: true
           node-version: '16.17.0'
           registry-url: https://npm.pkg.github.com/
           scope: '@yuta-katayama-23'
@@ -26,8 +27,8 @@ jobs:
         run: yarn install
 
       - run: |
+          pwd
           ls -al
-          cat ./.npmrc
 
       - name: build
         run: yarn build
