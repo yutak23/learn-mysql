@@ -1,8 +1,15 @@
 {
-	"name": "learn-mysql",
-	"version": "1.0.0",
+	"name": "@yuta-katayama-23/learn-mysql",
+	"version": "1.0.1",
 	"main": "index.js",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yuta-katayama-23/learn-mysql.git"
+	},
+	"publishConfig": {
+		"@yuta-katayama-23:registry": "https://npm.pkg.github.com"
+	},
 	"scripts": {
 		"dev": "webpack watch --node-env=development",
 		"build": "webpack --node-env=production",
